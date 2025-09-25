@@ -7,12 +7,14 @@ const orderSchema = z.object({
 
 const orderCompleteSchema = z.object({
   email: z.string().email(),
-  products: z.array(
-    z.object({
-      productId: z.string(),
-      weight: z.number().int().positive(),
-    })
-  ),
+  products: z
+    .array(
+      z.object({
+        productId: z.string(),
+        weight: z.number().int().positive(),
+      })
+    )
+    .optional(),
   addressId: z.string(),
 });
 

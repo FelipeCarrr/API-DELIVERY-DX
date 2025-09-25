@@ -2,6 +2,7 @@ import { AisleService } from "../services/aisle.service.js";
 import { AuthStaffService } from "../services/auth-staff.services.js";
 import { RolService } from "../services/rol.services.js";
 import { TypeService } from "../services/type.service.js";
+import { UnitOfMeasureService } from "../services/unit_of_measure.service.js";
 
 import { Aisle } from "./aisle.model.js";
 import { Basket } from "./basket.model.js";
@@ -20,6 +21,7 @@ import { StaffCredential } from "./staff-credentials.models.js";
 import { Staff } from "./staff.model.js";
 import { Type } from "./type.model.js";
 import { Order_Staff } from "./order_staff.model.js";
+import { UnitOfMeasure } from "./unit_of_measure.model.js";
 
 import { initialData } from "../utils/inital-data.js";
 import { Administration } from "./administration.model.js";
@@ -39,6 +41,7 @@ export const initORM = async () => {
   await Shelve.sync({ alter: true });
   await Level.sync({ alter: true });
   await Type.sync({ alter: true });
+  await UnitOfMeasure.sync({ alter: true });
   await Products.sync({ alter: true });
   await Products_Type.sync({ alter: true });
   await Basket.sync({ alter: true });
@@ -55,6 +58,7 @@ export const initORM = async () => {
   await AuthStaffService.createAuthStaffDefault();
   await AisleService.createData();
   await TypeService.createTypes();
+  await UnitOfMeasureService.createUnitsOfMeasure();
   await initialData.createOrderData();
   await initialData.createDefaultBaskets();
   await initialData.createDefaultAdministrations();
