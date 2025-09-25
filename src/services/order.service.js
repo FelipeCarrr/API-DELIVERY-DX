@@ -309,25 +309,8 @@ export class OrderService {
         };
       }
 
-      for (const product of data.products) {
-        const baskets = await Basket.findAll({
-          where: {
-            ProductId: product.productId,
-            weight: { [Op.gt]: 0 },
-          },
-          transaction,
-        });
-
-        const totalWeight = baskets.reduce((acc, b) => acc + b.weight, 0);
-
-        if (totalWeight < product.weight) {
-          await transaction.rollback();
-          return {
-            success: false,
-            statusCode: 400,
-            message: `Stock insuficiente para el producto ${product.productId}`,
-          };
-        }
+      if (data.products) {
+        // The inventory check is removed as per requirements.
       }
 
       const [orderState, productState] = await Promise.all([
@@ -347,52 +330,17 @@ export class OrderService {
         { transaction }
       );
 
-      for (const product of data.products) {
-        const orderProduct = await Order_Product.create(
-          {
-            weight: product.weight,
-            OrderId: order.id,
-            ProductId: product.productId,
-            OrderProductStateId: productState.id,
-          },
-          { transaction }
-        );
-
-        const baskets = await Basket.findAll({
-          where: {
-            ProductId: product.productId,
-            weight: { [Op.gt]: 0 },
-          },
-          order: [["weight", "ASC"]],
-          transaction,
-        });
-
-        let weightToSubtract = product.weight;
-
-        for (const basket of baskets) {
-          if (weightToSubtract <= 0) break;
-
-          const weightTaken = Math.min(basket.weight, weightToSubtract);
-
-          await Order_Product_Basket.create(
+      if (data.products) {
+        for (const product of data.products) {
+          await Order_Product.create(
             {
-              weight: weightTaken,
-              BasketId: basket.id,
-              OrderProductId: orderProduct.id,
+              weight: product.weight,
+              OrderId: order.id,
+              ProductId: product.productId,
+              OrderProductStateId: productState.id,
             },
             { transaction }
           );
-
-          if (basket.weight === weightTaken) {
-            await basket.update({ weight: 0 }, { transaction });
-          } else {
-            await basket.update(
-              { reserved: basket.reserved + weightTaken },
-              { transaction }
-            );
-          }
-
-          weightToSubtract -= weightTaken;
         }
       }
 

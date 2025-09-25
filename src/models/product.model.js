@@ -1,5 +1,6 @@
 import sequelize from "../utils/config-mysql.js";
 import { DataTypes, Model } from "sequelize";
+import { UnitOfMeasure } from "./unit_of_measure.model.js";
 
 export class Products extends Model {}
 
@@ -12,7 +13,6 @@ Products.init(
     },
     name: {
       type: DataTypes.STRING(45),
-      unique: true,
       allowNull: false,
     },
     image: {
@@ -25,3 +25,8 @@ Products.init(
     modelName: "Products",
   }
 );
+
+Products.belongsTo(UnitOfMeasure, {
+  foreignKey: "unitOfMeasureId",
+  as: "unitOfMeasure",
+});
